@@ -1,0 +1,76 @@
+# Default values for ix-gpu-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+operator:
+  nodeSelector: {}
+  priorityClassName: system-node-critical
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 350Mi
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: In
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: In
+                values: [""]
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+  imagePullSecrets: []
+  image: ix-gpu-operator
+  tag: latest
+  # If version is not specified, then default is to use chart.AppVersion
+  #version: ""
+  imagePullPolicy: IfNotPresent
+
+daemonsets:
+  labels: {}
+  annotations: {}
+  priorityClassName: system-node-critical
+  tolerations:
+  - key: iluvatar.com/gpu
+    operator: "Exists"
+    effect: "NoSchedule"
+  # configuration for controlling update strategy("OnDelete" or "RollingUpdate") of GPU Operands
+  # note that driver Daemonset is always set with OnDelete to avoid unintended disruptions
+  updateStrategy: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+
+ixDevicePlugin:
+  enabled: false
+  image: ix-device-plugin:4.2.0
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  config:
+    name: ""
+    default: ""
+
+ixExporter:
+  enabled: true
+  image: ix-exporter:4.2.0-x86_64
+  imagePullPolicy: IfNotPresent
+  env:
+  - name: IX_EXPORTER_PORT
+    value: "32021"
+  - name: IX_EXPORTER_ENABLE_KUBERNETES
+    value: "true"

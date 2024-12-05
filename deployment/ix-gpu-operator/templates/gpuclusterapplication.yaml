@@ -1,0 +1,76 @@
+apiVersion: iluvatar.com/v1alpha1
+kind: GPUClusterApplication
+metadata:
+  name: gpu-cluster-application
+  labels:
+    {{- include "ix-gpu-operator.labels" . | nindent 4 }}
+    name: "ix-gpu-operator"
+spec:
+  cluster: {}
+  daemonsets:
+    labels:
+      {{- include "ix-gpu-operator.operand-labels" . | nindent 6 }}
+    {{- if .Values.daemonsets.annotations }}
+    annotations: {{ toYaml .Values.daemonsets.annotations | nindent 6 }}
+    {{- end }}
+    {{- if .Values.daemonsets.tolerations }}
+    tolerations: {{ toYaml .Values.daemonsets.tolerations | nindent 6 }}
+    {{- end }}
+    {{- if .Values.daemonsets.updateStrategy }}
+    updateStrategy: {{ .Values.daemonsets.updateStrategy | quote }}
+    {{- end }}
+    {{- if .Values.daemonsets.rollingUpdate }}
+    rollingUpdate: 
+       maxUnavailable: {{ .Values.daemonsets.rollingUpdate.maxUnavailable | quote }}
+    {{- end }}
+    {{- if .Values.daemonsets.priorityClassName }}
+    priorityClassName: {{ .Values.daemonsets.priorityClassName | quote }}
+    {{- end }}
+  ixDevicePlugin:
+    enabled: {{ .Values.ixDevicePlugin.enabled }}
+    {{- if .Values.ixDevicePlugin.image }}
+    image: {{ .Values.ixDevicePlugin.image }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.version }}
+    version: {{ .Values.ixDevicePlugin.version }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.imagePullPolicy }}
+    imagePullPolicy: {{ .Values.ixDevicePlugin.imagePullPolicy }} 
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.imagePullSecrets }}
+    imagePullSecrets: {{ toYaml .Values.ixDevicePlugin.imagePullSecrets | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.resources }}
+    resources: {{ toYaml .Values.ixDevicePlugin.resources | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.env }}
+    env: {{ toYaml .Values.ixDevicePlugin.env | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.args }}
+    env: {{ toYaml .Values.ixDevicePlugin.args | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixDevicePlugin.config.name }}
+    config:
+      name: {{ .Values.ixDevicePlugin.config.name }}
+      default: {{ .Values.ixDevicePlugin.config.default }}
+    {{- end }}
+  ixExporter:
+    enabled: {{ .Values.ixExporter.enabled }}
+    {{- if .Values.ixExporter.image }}
+    image: {{ .Values.ixExporter.image }}
+    {{- end }}
+    {{- if .Values.ixExporter.version }}
+    version: {{ .Values.ixExporter.version }}
+    {{- end }}
+    {{- if .Values.ixExporter.imagePullPolicy }}
+    imagePullPolicy: {{ .Values.ixExporter.imagePullPolicy }} 
+    {{- end }}
+    {{- if .Values.ixExporter.imagePullSecrets }}
+    imagePullSecrets: {{ toYaml .Values.ixExporter.imagePullSecrets | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixExporter.resources }}
+    resources: {{ toYaml .Values.ixExporter.resources | nindent 6 }}
+    {{- end }}
+    {{- if .Values.ixExporter.env }}
+    env: {{ toYaml .Values.ixExporter.env | nindent 6 }}
+    {{- end }}

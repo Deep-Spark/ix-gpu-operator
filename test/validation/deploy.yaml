@@ -1,0 +1,380 @@
+---
+# Source: ix-gpu-operator/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ix-gpu-operator
+  namespace: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+---
+# Source: ix-gpu-operator/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+rules:
+  - apiGroups:
+    - rbac.authorization.k8s.io
+    resources:
+    - clusterroles
+    - clusterrolebindings
+    verbs:
+    - "*"
+  - apiGroups:
+    - ""
+    resources:
+    - nodes
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - update
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - pods/eviction
+    - events
+    - services
+    verbs:
+    - "*"
+  - apiGroups:
+    - ""
+    resources:
+    - namespaces
+    - serviceaccounts
+    verbs:
+    - "*"
+  - apiGroups:
+    - apps
+    resources:
+    - daemonsets
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - iluvatar.com
+    resources:
+    - controllerrevisions
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - iluvatar.com
+    resources:
+    - gpuclusterapplications
+    - gpuclusterapplications/status
+    - gpuclusterapplications/finalizers
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - update
+    - patch
+    - delete
+    - deletecollection
+  - apiGroups:
+    - scheduling.k8s.io
+    resources:
+    - priorityclasses
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+  - apiGroups:
+    - coordinator.k8s.io
+    resources:
+    - leases
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - node.k8s.io
+    resources:
+    - runtimeclasses
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - watch
+    - delete
+  - apiGroups:
+    - apiextensions.k8s.io
+    resources:
+    - customresourcedefinitions
+    verbs:
+    - get
+    - list
+    - watch
+    - update
+    - patch
+    - create
+---
+# Source: ix-gpu-operator/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+subjects:
+- kind: ServiceAccount
+  name: ix-gpu-operator
+  namespace: ix-gpu-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ix-gpu-operator
+---
+# Source: ix-gpu-operator/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ix-gpu-operator
+  namespace: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - configmaps
+  - secrets
+  - serviceaccounts
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - serviceaccounts
+  - roles
+  - rolebindings
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  - prometheusrules
+  verbs:
+  - get
+  - list
+  - create
+  - watch
+  - update
+  - delete
+---
+# Source: ix-gpu-operator/templates/rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ix-gpu-operator
+  namespace: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+subjects:
+  - kind: ServiceAccount
+    name: ix-gpu-operator
+    namespace: ix-gpu-operator
+roleRef:
+  kind: Role
+  name: ix-gpu-operator
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: ix-gpu-operator/templates/operator.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ix-gpu-operator
+  namespace: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "ix-gpu-operator"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 33%
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "ix-gpu-operator"
+    spec:
+      serviceAccountName: ix-gpu-operator
+      priorityClassName: system-node-critical
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+      affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: In
+                  values:
+                  - ""
+              weight: 1
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: In
+                  values:
+                  - ""
+              weight: 1
+      containers:
+      - name: ix-gpu-operator
+        image: ix-gpu-operator:latest
+        imagePullPolicy: IfNotPresent
+        command: ["ix-gpu-operator"]
+        resources:
+          limits:
+            cpu: 500m
+            memory: 350Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        env:
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: OPERATOR_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        ports:
+          - name: metrics
+            containerPort: 8080
+      volumes:
+      - name: host-os-release
+        hostPath:
+          path: "/etc/os-release"
+---
+# Source: ix-gpu-operator/templates/gpuclusterapplication.yaml
+apiVersion: iluvatar.com/v1alpha1
+kind: GPUClusterApplication
+metadata:
+  name: gpu-cluster-application
+  namespace: ix-gpu-operator
+  labels:
+    helm.sh/chart: ix-gpu-operator-0.1.0
+    app.kubernetes.io/name: ix-gpu-operator
+    app.kubernetes.io/instance: ix-gpu-operator
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+    name: "ix-gpu-operator"
+spec:
+  cluster: {}
+  daemonsets:
+    labels:
+      helm.sh/chart: ix-gpu-operator-0.1.0
+      app.kubernetes.io/managed-by: ix-gpu-operator
+    tolerations:
+      - effect: NoSchedule
+        key: iluvatar.com/gpu
+        operator: Exists
+    updateStrategy: "RollingUpdate"
+    rollingUpdate:
+       maxUnavailable: "1"
+    priorityClassName: "system-node-critical"
+  ixDevicePlugin:
+    enabled: false
+    image: ix-device-plugin:4.2.0
+    imagePullPolicy: IfNotPresent
+  ixExporter:
+    enabled: true
+    image: ix-exporter:4.2.0-x86_64
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: IX_EXPORTER_PORT
+        value: "32021"
+      - name: IX_EXPORTER_ENABLE_KUBERNETES
+        value: "true"

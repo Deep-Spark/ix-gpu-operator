@@ -1,0 +1,69 @@
+# Copyright 2022 Iluvatar CoreX.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: iluvatar-ix-exporter
+  namespace: "Filled By The Configuration"
+  labels:
+    app.kubernetes.io/name: iluvatar-ix-exporter
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iluvatar-ix-exporter
+  template:
+    metadata:
+      name: iluvatar-ix-exporter
+      labels:
+        app.kubernetes.io/name: iluvatar-ix-exporter
+    spec:
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      priorityClassName: system-node-critical
+      serviceAccountName: iluvatar-ix-exporter
+      containers:
+      - image: "Filled By The Configuration"
+        name: iluvatar-ix-exporter-ctr
+        ports:
+        - name: "metrics"
+          containerPort: 32021
+        securityContext:
+          privileged: true
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+        - name: "pod-resources"
+          readOnly: true
+          mountPath: "/var/lib/kubelet/pod-resources"
+        - name: "split-board"
+          readOnly: true
+          mountPath: "/iluvatar-config"
+        - name: "host-proc"
+          mountPath: /host-proc
+          readOnly: true
+          mountPropagation: HostToContainer
+      volumes:
+      - name: "split-board"
+        configMap:
+          name: "ix-config"
+      - name: "host-proc"
+        hostPath:
+          path: "/proc"
+      - name: "pod-resources"
+        hostPath:
+          path: "/var/lib/kubelet/pod-resources"

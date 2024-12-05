@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- gpuoperator_v1alpha1_gpuclusterapplication.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples
