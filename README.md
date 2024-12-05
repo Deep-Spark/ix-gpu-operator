@@ -5,7 +5,7 @@ The ix-gpu-operator is designed to help the user to provision and configure gpu 
 There are many services about gpu services in the gpu cluster. To make it work, it requires different components to be provisioned and configured accordingly. It makes sense to have one operator to coordinate those relevant components in one place, instead of having them managed by different operators. 
 
 ## Features
-The operator will automatically create the necessary resources to run the ixexporter and ix-device-plugin.
+The operator will automatically create the necessary resources to run the [ix-exporter](https://gitee.com/deep-spark/ix-exporter) and [ix-device-plugin](https://gitee.com/deep-spark/ix-device-plugin).
 
 ## Getting Started
 
