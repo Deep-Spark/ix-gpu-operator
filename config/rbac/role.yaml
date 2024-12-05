@@ -1,0 +1,50 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - namespaces
+  - pods
+  - pods/eviction
+  - serviceaccounts
+  - services
+  - services/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - iluvatar.com
+  resources:
+  - gpuclusterapplications
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - iluvatar.com
+  resources:
+  - gpuclusterapplications/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - iluvatar.com
+  resources:
+  - gpuclusterapplications/status
+  verbs:
+  - get
+  - patch
+  - update

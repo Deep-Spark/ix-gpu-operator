@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ix-gpu-operator
+description: IX GPU Operator configures and manages GPUs in the kubernetes cluster
+version: 0.1.0
+kubeVersion: ">=1.16.0-0"
+type: application
+appVersion: "1.16.0"

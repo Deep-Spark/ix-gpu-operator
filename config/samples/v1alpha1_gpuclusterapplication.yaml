@@ -1,0 +1,21 @@
+apiVersion: iluvatar.com/v1alpha1
+kind: GPUClusterApplication
+metadata:
+  name: gpuclusterapplication-sample
+  namespace: "kube-system"
+spec:
+  cluster: {}
+  daemonsets: {}
+  ixDevicePlugin:
+    enabled: false
+    image: ix-device-plugin:4.1.1
+    imagePullPolicy: IfNotPresent
+  ixExporter:
+    enabled: true
+    image: ix-exporter:4.2.0-x86_64
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: IX_EXPORTER_PORT
+      value: "32021"
+    - name: IX_EXPORTER_ENABLE_KUBERNETES
+      value: "true"
